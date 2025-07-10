@@ -1,11 +1,11 @@
 # https://taskfile.dev
 
-version: '3'
+version: "3"
 includes:
-  dotnet: ./.build/dotnet.yml
-vars:
-  GREETING: Hello, World!
-
+  dotnet:
+    taskfile: ./.build/dotnet.yml
+    vars:
+      SOLUTION_FILE: "taskfile var PLACEHOLDER"
 tasks:
   default:
     cmds:

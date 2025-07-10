@@ -1,7 +1,7 @@
 version: "3"
 
 vars:
-  SOLUTION_FILE: '{{default "" .SOLUTION_FILE}}'
+  SOLUTION_FILE: '{{.SOLUTION_FILE | default "" }}'
   SRC_DIR: '{{default "src" .SRC_DIR}}'
 
 tasks:
