@@ -9,4 +9,10 @@ includes:
 tasks:
   default:
     cmds:
+      - task: build
+  build:
+    cmds:
       - task: dotnet:build
+  test:
+    cmds:
+      - task: dotnet:test
