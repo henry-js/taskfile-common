@@ -49,8 +49,22 @@ tasks:
   # This task is specifically for creating a NuGet package from a library
   pack-nuget:
     desc: "Packs the project as a NuGet package"
-    deps: [build]
+    deps: [test]
     vars:
       PROJECT_TO_PACK: "{{.PROJECT_TO_PACK}}"
     cmds:
       - dotnet pack "src/{{.PROJECT_TO_PACK}}" -c {{.CONFIGURATION}} --no-build -o {{.NUGET_OUTPUT_DIR}}
+
+  push-nuget:
+    desc: "Pushes the NuGet package to a feed"
+    # This task requires these variables to be set in the environment
+    vars:
+      NUGET_PACKAGE_PATH: '{{.NUGET_OUTPUT_DIR}}/{{.PROJECT_TO_PACK | replace "csproj" "nupkg" | replace "/" "."}}'
+      NUGET_API_KEY: "{{.NUGET_API_KEY}}"
+      NUGET_SOURCE_URL: "{{.NUGET_SOURCE_URL}}"
+    cmds:
+      - >
+        dotnet nuget push "{{.NUGET_PACKAGE_PATH}}"
+        -k {{.NUGET_API_KEY}}
+        -s {{.NUGET_SOURCE_URL}}
+        --skip-duplicate

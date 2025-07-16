@@ -1,7 +1,7 @@
 # https://taskfile.dev
 version: "3"
 
-dotenv: [".env"]
+dotenv: ["public.env", ".env"]
 
 # This Taskfile sources its configuration from a .env file in the root directory.
 # To get started, copy .env.example to .env and customize it for your project.
@@ -59,20 +59,6 @@ tasks:
     cmds:
       - task: dotnet:publish-app
 
-  pack:nuget:
-    desc: "Packs the project as a NuGet package (for libraries)"
-    preconditions:
-      # Precondition now directly checks if the variable is set.
-      - sh: |
-          {{if eq .OS "windows"}}
-            powershell -Command "exit !($env:PROJECT_TO_PACK)"
-          {{else}}
-            [ -n "$PROJECT_TO_PACK" ]
-          {{end}}
-        msg: "Not a library project. Set PROJECT_TO_PACK in .env to enable."
-    cmds:
-      - task: dotnet:pack-nuget
-
   setup:
     desc: "Restores local .NET tools defined in the manifest"
     cmds:
@@ -87,6 +73,35 @@ tasks:
     cmds:
       - dotnet minver --tag-prefix v
     deps: [setup]
+
+  pack:nuget:
+    desc: "Packs the project as a NuGet package (for libraries)"
+    preconditions:
+      # Precondition now directly checks if the variable is set.
+      - sh: |
+          {{if eq .OS "windows"}}
+            powershell -Command "exit !($env:PROJECT_TO_PACK)"
+          {{else}}
+            [ -n "$PROJECT_TO_PACK" ]
+          {{end}}
+        msg: "Not a library project. Set PROJECT_TO_PACK in .env to enable."
+    cmds:
+      - task: dotnet:pack-nuget
+
+  push:nuget:
+    desc: "Packs and pushes the library to a NuGet feed"
+    deps: [pack:nuget]
+    preconditions:
+      # Precondition to ensure the API key is set
+      - sh: |
+          {{if eq .OS "windows"}}
+            powershell -Command "exit !($env:NUGET_API_KEY)"
+          {{else}}
+            [ -n "$NUGET_API_KEY" ]
+          {{end}}
+        msg: "NUGET_API_KEY is not set. Please add it to .env.secrets."
+    cmds:
+      - task: dotnet:push-nuget
 
   pack:velopack:
     desc: "Packages the executable application using Velopack"
