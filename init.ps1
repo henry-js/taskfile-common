@@ -48,20 +48,25 @@ Write-Host "Initializing build system in '$RepoRoot'..." -ForegroundColor Cyan
 
 # --- Define Source and Destination Paths ---
 $SourceTaskfile = Join-Path -Path $ScriptDir -ChildPath "templates/Taskfile.yml.template"
+$SourcePublicEnv = Join-Path -Path $ScriptDir -ChildPath "templates/public.env.example"
 $SourceEnvExample = Join-Path -Path $ScriptDir -ChildPath "templates/.env.example"
 $SourceBuildProps = Join-Path -Path $ScriptDir -ChildPath "templates/Directory.Build.props.template"
-$SourceToolConfig = Join-Path -Path $ScriptDir -ChildPath "dotnet/.config" # <-- New
+$SourceToolConfig = Join-Path -Path $ScriptDir -ChildPath "dotnet/.config"
 
 $DestTaskfile = Join-Path -Path $RepoRoot -ChildPath "Taskfile.yml"
+$DestSecretExample = Join-Path -Path $RepoRoot -ChildPath "public.env"
 $DestEnvExample = Join-Path -Path $RepoRoot -ChildPath ".env.example"
-$DestBuildProps = Join-Path -Path $RepoRoot -ChildPath "Directory.Build.props" # <-- New
-$DestToolConfig = Join-Path -Path $RepoRoot -ChildPath ".config" # <-- New
+$DestBuildProps = Join-Path -Path $RepoRoot -ChildPath "Directory.Build.props"
+$DestToolConfig = Join-Path -Path $RepoRoot -ChildPath ".config"
 
 # --- Execute the copy operations ---
 Copy-TemplateFile -SourcePath $SourceTaskfile -DestinationPath $DestTaskfile -ShouldForce $Force
 Copy-TemplateFile -SourcePath $SourceEnvExample -DestinationPath $DestEnvExample -ShouldForce $Force
+Copy-TemplateFile -SourcePath $SourcePublicEnv -DestinationPath $DestSecretExample -ShouldForce $Force
 Copy-TemplateFile -SourcePath $SourceBuildProps -DestinationPath $DestBuildProps -ShouldForce $Force # <-- New
 Copy-TemplateDirectory -SourcePath $SourceToolConfig -DestinationPath $DestToolConfig -ShouldForce $Force # <-- New
+
+dotnet tool restore
 
 # --- Provide next steps ---
 Write-Host "`n✅ Initialization complete." -ForegroundColor White

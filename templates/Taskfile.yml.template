@@ -99,7 +99,7 @@ tasks:
           {{else}}
             [ -n "$NUGET_API_KEY" ]
           {{end}}
-        msg: "NUGET_API_KEY is not set. Please add it to .env.secrets."
+        msg: "NUGET_API_KEY is not set. Please add it to .env"
     cmds:
       - task: dotnet:push-nuget
 
